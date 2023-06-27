@@ -1,0 +1,242 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+:root {
+  --largeurbanniere: 728px;
+  --hauteurbanniere: 90px;
+}
+#banniere {
+	position: relative;
+	width: var(--largeurbanniere);
+	height: var(--hauteurbanniere);
+	left: 0;
+	top: 0;
+	overflow: hidden;
+	display:none;
+}
+#zoneclic {
+	position: absolute;
+	width: var(--largeurbanniere);
+	height: var(--hauteurbanniere);
+	left: 0;
+	top: 0;
+}
+#contours{
+  border-width: 1px;
+  border-color: rgb( 0, 0, 0 );
+  border-style: solid;
+  box-sizing:border-box;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+}
+#limitecarte {
+  position: absolute;
+  width: 118px;
+  height: 37px;
+  left: 426px;
+  top: 25px;
+  z-index: 100;
+  overflow: hidden;
+}
+#degradecarte{
+	position: absolute;
+	left:-100%;
+	top: 0px;
+	width:100%;
+	height: 100%;
+	background-image: -moz-linear-gradient( -17deg, rgba( 255, 255, 255,0 ) 31.201%, rgba( 255, 255, 255,0.8 ) 50.586%, rgba( 255, 255, 255,0 ) 65.967%);
+	background-image: -webkit-linear-gradient( -17deg, rgba( 255, 255, 255,0 ) 31.201%, rgba( 255, 255, 255,0.8 ) 50.586%, rgba( 255, 255, 255,0 ) 65.967%);
+	background: -ms-linear-gradient(-17deg, rgba( 255, 255, 255,0 ) 31.201%, rgba( 255, 255, 255,0.8 ) 50.586%, rgba( 255, 255, 255,0 ) 65.967%); /*IE10*/
+}
+
+#cta2 {
+  position: absolute;
+  width: 118px;
+  height: 37px;
+  left: 426px;
+  top: 25px;
+  z-index: 45;
+}
+
+#legal2 {
+  position: absolute;
+  width: 147px;
+  height: 8px;
+  left: 141px;
+  top: 68px;
+  z-index: 41;
+}
+
+#txt4_1 {
+  position: absolute;
+  width: 318px;
+  height: 16px;
+  left: 60px;
+  top: 36px;
+  z-index: 38;
+}
+
+#logo2 {
+  position: absolute;
+  width: 59px;
+  height: 30px;
+  left: 631px;
+  top: 29px;
+  z-index: 35;
+}
+
+#trait2 {
+  position: absolute;
+  width: 1px;
+  height: 60px;
+  left: 599px;
+  top: 15px;
+  z-index: 34;
+  background-color: #fff;
+}
+
+#fond2 {
+  position: absolute;
+  width: 728px;
+  height: 90px;
+  left: 0;
+  top: 0;
+  z-index: 33;
+  background-color: #050330;
+}
+
+#cta {
+  position: absolute;
+  width: 84px;
+  height: 24px;
+  left: 259px;
+  top: 33px;
+  z-index: 32;
+}
+
+#trait {
+  position: absolute;
+  width: 1px;
+  height: 60px;
+  left: 238px;
+  top: 15px;
+  z-index: 28;
+  background-color: #fff;
+}
+
+#legal {
+  position: absolute;
+  width: 143px;
+  height: 8px;
+  left: 48px;
+  top: 69px;
+  z-index: 27;
+}
+
+#txt3_1 {
+  position: absolute;
+  width: 173px;
+  height: 41px;
+  left: 33px;
+  top: 21px;
+  z-index: 24;
+}
+
+#txt2_1 {
+  position: absolute;
+  width: 104px;
+  height: 38px;
+  left: 68px;
+  top: 27px;
+  z-index: 21;
+}
+
+#txt1_1 {
+  position: absolute;
+  width: 178px;
+  height: 38px;
+  left: 31px;
+  top: 24px;
+  z-index: 18;
+}
+
+#fond {
+  position: absolute;
+  width: 392px;
+  height: 90px;
+  left: 0;
+  top: 0;
+  z-index: 15;
+}
+
+#image3 {
+  position: absolute;
+  width: 368px;
+  height: 90px;
+  left: 360px;
+  top: 0;
+  z-index: 14;
+}
+
+#image2 {
+  position: absolute;
+  width: 368px;
+  height: 90px;
+  left: 360px;
+  top: 0;
+  z-index: 10;
+}
+
+#image1 {
+  position: absolute;
+  width: 368px;
+  height: 90px;
+  left: 360px;
+  top: 0;
+  z-index: 6;
+}
+
