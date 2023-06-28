@@ -47,13 +47,12 @@ struct_message myData; // Create a struct_message called myData
 
 esp_now_peer_info_t peerInfo; // Stores info about the peer
 
-// SSID and password of the Soft Access Point created in the ESP32-CAM
-const char* SSID_AP = "Soft-Access-Point";
-const char*  PASSWORD_AP = "123456789";
-
 bool channelFound = false;
-uint8_t channel = 7; // Currently used WiFi channel
+uint8_t channel = 1; // Currently used WiFi channel, set to 1 by default
 
+// SSID and password of the Soft Access Point created in the ESP32-CAM
+char* SSID_AP = "Soft-Access-Point";
+char*  PASSWORD_AP = "123456789";
 /********************************************************
 ** Functions used in this program                      **
 ********************************************************/
@@ -64,8 +63,17 @@ void add_peer(int channel); // Setup esp-now communication with esp32 cam
 /********************************************************
 ** Setup + loop start here                             **
 ********************************************************/
+
+void WiFiReset() {
+  WiFi.persistent(false);
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF);
+}
+
 void setup() {
   Serial.begin(9600);
+  // WiFiReset();
+
   while (!Serial)
     delay(100); // wait for native usb
 
@@ -77,6 +85,9 @@ void setup() {
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(WIFI_PS_NONE);
+
+  connect_esp32_wifi_network(SSID_AP, PASSWORD_AP);
+  WiFi.printDiag(Serial);
 
   add_peer(channel); // Start esp32 now, register and add esp32 cam as peer with callback function on message sent
 }
@@ -122,7 +133,7 @@ void loop() {
 ** Call back function for when data is sent            **
 ********************************************************/
 void onDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
-  if (!channelFound && status != ESP_NOW_SEND_SUCCESS) { 
+  if (!channelFound && status != ESP_NOW_SEND_SUCCESS) {
     Serial.println("Delivery Fail because channel" + String(channel) + " does not match receiver channel.");
     tryNextChannel(); // If message was not delivered, it tries on another wifi channel.
   }

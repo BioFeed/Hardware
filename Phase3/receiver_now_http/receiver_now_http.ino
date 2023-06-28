@@ -21,16 +21,15 @@ programmer esptool
 /********************************************************
 ** Setup to communicate with server                    **
 ********************************************************/
-#define TOKEN "token" // Token used for authentification
-String serverName = "192.168.9.196";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
-String serverPath = "/store_data";
-const int serverPort = 5000;
+#define TOKEN "ryT2065bdEg0jfOttxPr" // Token used for authentification
+const char* serverName = "http://192.168.188.120:5000/store_data";
 
 // Wi-Fi constants
-#define NETWORK_SSID "ssid"
-#define NETWORK_PASS "pass"
+#define NETWORK_SSID "abcdef"
+#define NETWORK_PASS "1234567891"
 
 WiFiClient client;
+bool sendToServer = false; // when sendData = true, the loop will send a photo and and latest received data
 
 /********************************************************
 ** ESP32 NOW Communication variables                   **
@@ -48,7 +47,6 @@ struct_message myData; // Create a struct_message called myData
 // SSID and password of the Soft Access Point created in the ESP32-CAM
 const char* SSID_AP = "Soft-Access-Point";
 const char*  PASSWORD_AP = "123456789";
-
 /********************************************************
 ** Functions used in this program                      **
 ********************************************************/
@@ -62,6 +60,7 @@ void sendPhoto(String serverPath, String serverName, int serverPort, WiFiClient 
 ********************************************************/
 void setup() {
   // Initialize Serial Monitor
+  // Show all WiFi info :   WiFi.printDiag(Serial);
   Serial.begin(9600);
 
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
@@ -73,17 +72,27 @@ void setup() {
   WiFi.softAP(SSID_AP, PASSWORD_AP); // Start local access point
 
   connect_esp32_wifi_network(NETWORK_SSID, NETWORK_PASS);  
-  
+  WiFi.printDiag(Serial);
+    
   config_camera();
   
-  void initialize_ESP_NOW();
+  initialize_ESP_NOW();
 
   // Test with:
   // sendPhoto(serverPath, serverName, serverPort, client);
-  // sendData(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, serverPath, serverName, serverPort, client);
+  // sendData(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, serverName, client);
 }
 
 void loop() {
+  if ( WiFi.status() ==  WL_CONNECTED ) {
+    if (sendToServer) {
+      sendPhoto(serverName, client);
+      sendData(myData.temperatureDS18B20, myData.temperatureBMP280, myData.pressureBMP280, myData.humidityDHT22, myData.temperatureDHT22, myData.lightTEMT6000, serverName, client);
+      sendToServer = false;
+    }
+  } else {
+    connect_esp32_wifi_network(NETWORK_SSID, NETWORK_PASS);
+    }
 }
 
 /********************************************************
@@ -110,7 +119,6 @@ void initialize_ESP_NOW() {
 ** Call back function for when data is received        **
 ********************************************************/
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  sendPhoto(serverPath, serverName, serverPort, client);
   memcpy(&myData, incomingData, sizeof(myData)); // We copy the content of the incomingData data variable into the myData variable. 
   Serial.print("Bytes received: ");
   Serial.println(len);
@@ -120,35 +128,23 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.println("humidityDHT22: " + String(myData.humidityDHT22));
   Serial.println("temperatureDHT22: " + String(myData.temperatureDHT22));
   Serial.println("lightTEMT6000: " + String(myData.lightTEMT6000));
-  sendData(myData.temperatureDS18B20, myData.temperatureBMP280, myData.pressureBMP280, myData.humidityDHT22, myData.temperatureDHT22, myData.lightTEMT6000, serverPath, serverName, serverPort, client);
 }
 
 /********************************************************
 ** Send photo using HTTP POST request                  **
 ********************************************************/
-void sendPhoto(String serverPath, String serverName, int serverPort, WiFiClient client) {
+void sendPhoto(String serverName, WiFiClient client) {
   camera_fb_t * fb = capturePhoto();
-  
-  Serial.println("Connecting to server: " + serverName);
-
-  if (connectToServerSucessful(serverName, serverPort, client)) {
-    Serial.println("Connection to server successful!");    
-    String payload = createPhotoPayload(fb, TOKEN);
-    sendRequest(payload, serverPath, serverName, client);
-    Serial.println("Sent payload");
-  }
+  String payload = createPhotoPayload(fb, TOKEN);
+  sendRequest(payload, serverName, client);
+  Serial.println("Sent payload");
 }
 
 /********************************************************
 ** Send data using HTTP POST request                   **
 ********************************************************/
-void sendData(float temperatureDS18B20, float temperatureBMP280, float pressureBMP280, float humidityDHT22, float temperatureDHT22, float lightTEMT6000, String serverPath, String serverName, int serverPort, WiFiClient client) {
-  Serial.println("Connecting to server: " + serverName);
-
-  if (connectToServerSucessful(serverName, serverPort, client)) {
-    Serial.println("Connection to server successful!");
-    String payload = createDataPayload(temperatureDS18B20, temperatureBMP280, pressureBMP280, humidityDHT22, temperatureDHT22, lightTEMT6000, TOKEN);
-    sendRequest(payload, serverPath, serverName, client);
-    Serial.println("Sent payload");
-  }
+void sendData(float temperatureDS18B20, float temperatureBMP280, float pressureBMP280, float humidityDHT22, float temperatureDHT22, float lightTEMT6000, String serverName, WiFiClient client) {
+  String payload = createDataPayload(temperatureDS18B20, temperatureBMP280, pressureBMP280, humidityDHT22, temperatureDHT22, lightTEMT6000, TOKEN);
+  sendRequest(payload, serverName, client);
+  Serial.println("Sent payload");
 }

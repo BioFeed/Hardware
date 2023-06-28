@@ -21,9 +21,7 @@ bool connectToServerSucessful(String server_url, HTTPClient& https, WiFiClientSe
 String createPhotoPayload(camera_fb_t* fb, String token) {
   Serial.println("Creating photo payload");
   String payload = "{";
-  payload += "\"token\": \"";
-  payload += token;
-  payload += "\",";
+  payload += "\"token\": \"" + String(token) + "\",";
   payload += "\"image\": \"";
   String encodedImage = base64::encode(fb->buf, fb->len);
   payload += encodedImage;
@@ -37,8 +35,8 @@ String createPhotoPayload(camera_fb_t* fb, String token) {
 String createDataPayload(float temperatureDS18B20, float temperatureBMP280, float pressureBMP280, float humidityDHT22, float temperatureDHT22, float lightTEMT6000, String token) {
   Serial.println("Creating data payload");
   String payload = "{";
-  payload += "\"token\": \"";
-  payload += token;
+  payload += "\"token\": \"" + String(token) + "\",";
+  payload += "\"command\": \"save\",";
   payload += "\"temperatureDS18B20\": \"" + String(temperatureDS18B20) + "\",";
   payload += "\"temperatureBMP280\": \"" + String(temperatureBMP280) + "\",";
   payload += "\"pressureBMP280\": \"" + String(pressureBMP280) + "\",";

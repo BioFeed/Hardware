@@ -14,6 +14,7 @@ void connect_esp32_wifi_network(char* ssid, char* password) {
     delay(500);
   }
   Serial.println("Ok\nConnected!");
+  delay(3000);
   Serial.print("IP Address: ");
   Serial.print(WiFi.localIP());
   Serial.print("; MAC Address: ");

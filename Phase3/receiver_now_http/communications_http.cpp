@@ -1,7 +1,4 @@
 #include "communications_http.h"
-#include <Arduino.h>
-#include <base64.h>
-
 
 /********************************************************
 ** Test HTTPS Connection To Server                     **
@@ -23,9 +20,8 @@ bool connectToServerSucessful(String serverName, int serverPort, WiFiClient clie
 String createPhotoPayload(camera_fb_t* fb, String token) {
   Serial.println("Creating photo payload");
   String payload = "{";
-  payload += "\"token\": \"";
-  payload += token;
-  payload += "\",";
+  payload += "\"token\": \"" + String(token) + "\",";
+  payload += "\"command\": \"save\",";
   payload += "\"image\": \"";
   String encodedImage = base64::encode(fb->buf, fb->len);
   payload += encodedImage;
@@ -39,8 +35,7 @@ String createPhotoPayload(camera_fb_t* fb, String token) {
 String createDataPayload(float temperatureDS18B20, float temperatureBMP280, float pressureBMP280, float humidityDHT22, float temperatureDHT22, float lightTEMT6000, String token) {
   Serial.println("Creating data payload");
   String payload = "{";
-  payload += "\"token\": \"";
-  payload += token;
+  payload += "\"token\": \"" + String(token) + "\",";
   payload += "\"temperatureDS18B20\": \"" + String(temperatureDS18B20) + "\",";
   payload += "\"temperatureBMP280\": \"" + String(temperatureBMP280) + "\",";
   payload += "\"pressureBMP280\": \"" + String(pressureBMP280) + "\",";
@@ -53,14 +48,14 @@ String createDataPayload(float temperatureDS18B20, float temperatureBMP280, floa
 /********************************************************
 ** Send POST HTTPS request containing payload          **
 ********************************************************/
-void sendRequest(String payload, String serverPath, String serverName, WiFiClient client) {
-  Serial.println("Sending payload in HTTP request");
+void sendRequest(String payload, String serverName, WiFiClient client) {
+  HTTPClient http;
+  http.begin(client, serverName);
+  http.addHeader("Content-Type", "application/json");
+  int httpResponseCode = http.POST(payload);
 
-  client.println("POST " + serverPath + " HTTP/1.1");
-  client.println("Host: " + serverName);
-  client.println("Content-Type: application/json");
-  client.println("Content-Length: " + String(payload.length()));
-  client.println();
-  client.println(payload);
   Serial.println("HTTP request sent");
+  Serial.print("HTTP Response code: ");
+  Serial.println(httpResponseCode);
+  http.end();
 }

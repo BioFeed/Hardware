@@ -6,6 +6,12 @@
 - Understanding the pinout of esp32 -> [understand-esp32-pinout.html](WikiFiles/Resources/understand-esp32-pinout.html)
 - Programming the esp32 cam board -> [program-esp32cam.html](WikiFiles/Resources/program-esp32cam.html)
 
+To get the latest version of the code running, head over to [Phase3](Phase3).
+
+## Pinout of our project
+
+![project-schematics.png](project-schematics.png)
+
 ## Pinout of esp32 and esp32-cam boards
 
 ### esp32

@@ -4,9 +4,9 @@ Phase 1 of development involved testing the sensors and the camera individually 
 
 ## Important Folders
 
-- `all_in_one` contains code to read data from all the sensors.
-- `CameraLiveStream` contains example code to set up a web server on the esp32-cam and use it remotely.
-- `live_plotting_from_serial` contains a Python script to display real-time data from the sensors collected via serial.
+- `all_in_one` contains code to read data from all the sensors at once.
+- `CameraLiveStream` contains example code to set up a web server on the esp32-cam and access it remotely.
+- `live_plotting_from_serial` contains a Python script to display real-time data gathered using the sensors and rceived via serial.
 
 ## Libraries to install
 

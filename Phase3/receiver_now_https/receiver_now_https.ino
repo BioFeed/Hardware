@@ -27,11 +27,11 @@ https://randomnerdtutorials.com/esp32-https-requests/
 /********************************************************
 ** Setup to communicate with server                    **
 ********************************************************/
-#define NETWORK_SSID "ssid"
-#define NETWORK_PASS "pass"
+#define NETWORK_SSID "abcdef"
+#define NETWORK_PASS "1234567891"
 
-#define TOKEN "XXX" // Token used for authentification
-String server = "XXX"; // Server complete url 
+#define TOKEN "BBj4AZcijsDXwfiG8Trh" // Token used for authentification
+String server = "https://biofeed.vitavault.fr/store_data"; // Server complete url 
 
 const char* rootCACertificate = \
 "-----BEGIN CERTIFICATE-----\n" \
@@ -65,8 +65,9 @@ const char* rootCACertificate = \
 "mRGunUHBcnWEvgJBQl9nJEiU0Zsnvgc/ubhPgXRR4Xq37Z0j4r7g1SgEEzwxA57d\n" \
 "emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=\n" \
 "-----END CERTIFICATE-----\n";
- WiFiClientSecure *client = new WiFiClientSecure;
-
+ 
+WiFiClientSecure *client = new WiFiClientSecure;
+bool sendToServer = false; // when sendData = true, the loop will send a photo and and latest received data
 /********************************************************
 ** ESP32 NOW Communication variables                   **
 ********************************************************/
@@ -81,8 +82,8 @@ typedef struct struct_message {
 struct_message myData; // Create a struct_message called myData
 
 // SSID and password of the Soft Access Point created in the ESP32-CAM
-const char* SSID_AP = "Soft-Access-Point";
-const char*  PASSWORD_AP = "123456789";
+char* SSID_AP = "Soft-Access-Point";
+char*  PASSWORD_AP = "123456789";
 
 /********************************************************
 ** Functions used in this program                      **
@@ -104,10 +105,11 @@ void setup() {
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_AP_STA);
   esp_wifi_set_ps(WIFI_PS_NONE); // Otherwise wifi card goes to sleep if inactive
+  connect_esp32_wifi_network(NETWORK_SSID, NETWORK_PASS);
+  WiFi.printDiag(Serial);
 
   WiFi.softAP(SSID_AP, PASSWORD_AP); // Start local access point
 
-  connect_esp32_wifi_network(NETWORK_SSID, NETWORK_PASS); // Connect to wifi network 
   client->setCACert(rootCACertificate); // Use server certificate
 
   config_camera();
@@ -116,14 +118,20 @@ void setup() {
 
   // Test with:
   // sendPhoto(client, server);
-  // sendPhoto(client, server);
-  // sendPhoto(client, server);
   // sendData(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, client, server);
 }
 
 void loop() {
+  if ( WiFi.status() ==  WL_CONNECTED ) {
+    if (sendToServer) {
+      sendPhoto(client, server);
+      sendData(myData.temperatureDS18B20, myData.temperatureBMP280, myData.pressureBMP280, myData.humidityDHT22, myData.temperatureDHT22, myData.lightTEMT6000, client, server);
+      sendToServer = false;
+    }
+  } else {
+    connect_esp32_wifi_network(NETWORK_SSID, NETWORK_PASS);
+  }
 }
-
 
 /********************************************************
 ** Setup + loop end here                               **
@@ -136,7 +144,7 @@ void initialize_ESP_NOW() {
   // Initialize ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
-    delay(1000);
+    delay(100000);
     ESP.restart();
   } else {
     Serial.println("ESP NOW OK");
@@ -149,9 +157,6 @@ void initialize_ESP_NOW() {
 ** Call back function for when data is received        **
 ********************************************************/
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  delay(20000);
-  sendPhoto(client, server);
-  delay(20000);
   memcpy(&myData, incomingData, sizeof(myData)); // We copy the content of the incomingData data variable into the myData variable. 
   Serial.print("Bytes received: ");
   Serial.println(len);
@@ -161,7 +166,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.println("humidityDHT22: " + String(myData.humidityDHT22));
   Serial.println("temperatureDHT22: " + String(myData.temperatureDHT22));
   Serial.println("lightTEMT6000: " + String(myData.lightTEMT6000));
-  sendData(myData.temperatureDS18B20, myData.temperatureBMP280, myData.pressureBMP280, myData.humidityDHT22, myData.temperatureDHT22, myData.lightTEMT6000, client, server);
+  sendToServer = true;
 }
 
 /********************************************************

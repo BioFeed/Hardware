@@ -1,14 +1,14 @@
 # Phase 2
 
 Phase 2 of development involved testing the communication between the esp32 and the esp32-cam.
-The communication is done using the esp32 now protocol, which allows direct and bidirectional communication between the ESP32 modules without going through a router or Wi-Fi access point.
+The communication is done using the esp-now protocol, which allows direct and bidirectional communication between the ESP32 modules without going through a router or Wi-Fi access point.
 
 The sensor measurements from the esp32 (sender) are sent to the esp32-cam (receiver) with a constraint: the esp32-cam must be connected to a WLAN network to relay the measurement data and images to a remote server.
 This constraint requires:
 - Setting up a local access point (AP) on the esp32-cam, which the esp32 connects to before sending the sensor data.
-- The Wi-Fi channel used to send the sensor data to the local AP must be the same as the one used by the esp32-cam to relay data to the remote server.
+- The Wi-Fi channel used to send the sensor data via local AP must be the same as the one used by the esp32-cam to relay that data to the remote server.
 
-Note: This channel is often either 0 or 1.
+Note: This channel is often either 0 or 1, but since we do not know it, the sender tries all channels from 1 to 13 until it finds one that works.
 
 ## Important Folders
 
